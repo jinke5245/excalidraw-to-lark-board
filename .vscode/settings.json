@@ -1,25 +1,7 @@
 {
-  "[dockerfile]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
-  },
-  "[rust]": {
-    "editor.defaultFormatter": "rust-lang.rust-analyzer"
-  },
-  "[shellscript]": {
-    "editor.defaultFormatter": "foxundermoon.shell-format"
-  },
-  "[toml]": {
-    "editor.defaultFormatter": "tamasfe.even-better-toml"
-  },
   "editor.defaultFormatter": "esbenp.prettier-vscode",
-  "files.insertFinalNewline": true,
-  "yaml.customTags": [
-    "!reference sequence"
-  ],
-  "yaml.schemas": {
-    "https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json": [
-      ".gitlab-ci.yml",
-      ".gitlab/ci/*.yml"
-    ]
-  }
+  "files.associations": {
+    ".husky/*": "shellscript"
+  },
+  "files.insertFinalNewline": true
 }

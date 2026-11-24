@@ -1,0 +1,25 @@
+name: Bug report
+description: Report a problem with this project
+title: "fix: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: You can write the title and body in Chinese or English.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Steps to reproduce
+      description: Share the steps or commands that trigger the problem. Add a small example or error output if available.
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Include the version or commit and any relevant OS, runtime, or browser details.

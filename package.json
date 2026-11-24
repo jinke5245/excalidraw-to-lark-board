@@ -1,48 +1,13 @@
 {
-  "name": "excalidraw-to-lark-board",
-  "version": "1.0.0",
-  "description": "Convert Excalidraw scenes to editable Lark and Feishu whiteboards",
-  "scripts": {
-    "test": "vitest run",
-    "build": "tsc -p tsconfig.build.json",
-    "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit",
-    "prepack": "pnpm run build"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "devEngines": {
-    "packageManager": {
-      "name": "pnpm",
-      "version": "12.23.0",
-      "onFail": "download"
-    }
-  },
-  "packageManager": "pnpm@12.23.0+sha512.02da94ffaf133f46074322afe552f90d40b5f71ae259aefbccdacc5085b1d617e98d65e0131f5748b9b67445978ee5055d7d59a473f1eef0d504854fefcd5975",
+  "name": "@jinke5245/excalidraw-to-lark-board",
+  "version": "0.0.0",
   "type": "module",
-  "devDependencies": {
-    "@commitlint/cli": "^21.2.4",
-    "@commitlint/config-conventional": "^21.2.4",
-    "@semantic-release/changelog": "^7.0.0",
-    "@semantic-release/commit-analyzer": "^13.0.1",
-    "@semantic-release/exec": "^7.1.0",
-    "@semantic-release/git": "^11.0.1",
-    "@semantic-release/github": "^12.0.11",
-    "@semantic-release/release-notes-generator": "^14.1.1",
-    "@types/node": "^22.20.5",
-    "eslint": "^10.15.0",
-    "eslint-config-prettier": "^10.1.8",
-    "husky": "^9.1.7",
-    "lint-staged": "^17.6.2",
-    "npm-run-all": "^4.1.5",
-    "prettier": "^3.10.1",
-    "prettier-plugin-multiline-arrays": "^4.1.11",
-    "semantic-release": "^25.0.9",
-    "typescript": "^6.0.3",
-    "vite": "^6.4.6",
-    "vitest": "^5.1.1"
+  "engines": {
+    "node": ">=22.12.0"
   },
+  "files": [
+    "dist"
+  ],
   "dependencies": {
     "@excalidraw/excalidraw": "0.18.1",
     "commander": "^15.1.0",
@@ -51,13 +16,62 @@
     "react": "19.3.1",
     "react-dom": "19.3.1"
   },
-  "engines": {
-    "node": ">=22.12.0"
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@eslint/js": "^10.0.1",
+    "@eslint/json": "^2.1.1",
+    "@eslint/markdown": "^9.0.0",
+    "@eslint/shell": "^0.1.2",
+    "@semantic-release/changelog": "^7.0.0",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/exec": "^7.1.0",
+    "@semantic-release/git": "^11.0.1",
+    "@semantic-release/github": "^12.0.11",
+    "@semantic-release/release-notes-generator": "^14.1.1",
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "^5.1.1",
+    "bun": "^1.4.5",
+    "clean-package": "^2.2.0",
+    "eslint": "^10.15.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-json-schema-validator": "^6.3.2",
+    "eslint-plugin-yml": "^3.10.0",
+    "globals": "^17.14.0",
+    "husky": "^9.1.7",
+    "jiti": "^2.7.0",
+    "lint-staged": "^17.6.2",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^3.10.1",
+    "prettier-plugin-multiline-arrays": "^4.1.11",
+    "prettier-plugin-sh": "^0.20.2",
+    "semantic-release": "^25.0.9",
+    "tsx": "^4.23.15",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.73.0",
+    "vite": "^6.4.6",
+    "vitest": "^5.1.1"
   },
-  "bin": {
-    "excalidraw-to-lark-board": "./dist/index.js"
+  "scripts": {
+    "prepare": "run-s prepare:*",
+    "prepare:husky": "node scripts/git/prepare-husky.mjs",
+    "typecheck": "tsc --noEmit",
+    "check": "run-s typecheck format:check lint",
+    "lint": "run-s --continue-on-error lint:*",
+    "lint:eslint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "build": "tsc -p tsconfig.build.json",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "prepack": "run-s prepack:*",
+    "prepack:build": "pnpm run build",
+    "prepack:clean-package": "clean-package",
+    "postpack": "run-s postpack:*",
+    "postpack:clean-package": "clean-package restore"
   },
-  "files": [
-    "dist"
-  ]
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "packageManager": "pnpm@12.23.0+sha512.02da94ffaf133f46074322afe552f90d40b5f71ae259aefbccdacc5085b1d617e98d65e0131f5748b9b67445978ee5055d7d59a473f1eef0d504854fefcd5975"
 }

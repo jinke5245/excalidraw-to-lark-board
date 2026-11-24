@@ -1,0 +1,25 @@
+name: Feature request
+description: Suggest an improvement to this project
+title: "feat: "
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: You can write the title and body in Chinese or English.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What are you trying to do, and what gets in the way today?
+  - type: textarea
+    id: desired-outcome
+    attributes:
+      label: Desired outcome
+      description: What should happen? Describe a result we can verify.
+    validations:
+      required: true
+  - type: textarea
+    id: workaround
+    attributes:
+      label: Workaround
+      description: If you have a workaround, share the steps, command, or script you use.
