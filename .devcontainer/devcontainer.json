@@ -1,11 +1,44 @@
 {
-  "image": "mcr.microsoft.com/vscode/devcontainers/base:ubuntu",
-  "onCreateCommand": "",
-  "postCreateCommand": "",
+  "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+  "mounts": [
+    {
+      "source": "devcontainer-pnpm-store",
+      "target": "/var/cache/pnpm-store",
+      "type": "volume"
+    },
+    {
+      "source": "devcontainer-node-modules-${devcontainerId}",
+      "target": "${containerWorkspaceFolder}/node_modules",
+      "type": "volume"
+    }
+  ],
+  "features": {
+    "ghcr.io/devcontainers/features/common-utils:2": {},
+    "ghcr.io/devcontainers/features/node:2": {
+      "version": "22",
+      "pnpmVersion": "12.23.0"
+    },
+    "ghcr.io/devcontainers/features/docker-in-docker:4": {}
+  },
+  "containerEnv": {
+    "PNPM_CONFIG_STORE_DIR": "/var/cache/pnpm-store"
+  },
+  "remoteEnv": {
+    "PATH": "${containerEnv:PATH}:${containerWorkspaceFolder}/node_modules/.bin",
+    "LOCAL_WORKSPACE_FOLDER": "${localWorkspaceFolder}"
+  },
+  "onCreateCommand": {
+    "script": "bash -x .devcontainer/scripts/on-create-command.sh"
+  },
+  "postCreateCommand": {
+    "script": "bash -x .devcontainer/scripts/post-create-command.sh"
+  },
   "customizations": {
     "vscode": {
-      "settings": {},
-      "extensions": []
+      "extensions": [
+        "esbenp.prettier-vscode",
+        "redhat.vscode-yaml"
+      ]
     }
   }
 }
