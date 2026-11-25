@@ -1,0 +1,456 @@
+{
+  "nodes": [
+    {
+      "id": "t1:5",
+      "type": "section",
+      "z_index": 5,
+      "x": 56,
+      "y": 56,
+      "width": 224,
+      "height": 230,
+      "angle": 0,
+      "section": {
+        "title": "处理分区"
+      }
+    },
+    {
+      "id": "o1:1",
+      "z_index": 1,
+      "x": 24,
+      "y": 24,
+      "width": 168,
+      "height": 80,
+      "angle": 0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "round_rect"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#d0ebff",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      },
+      "text": {
+        "text": "开始",
+        "font_size": 24,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      },
+      "parent_id": "t1:5"
+    },
+    {
+      "id": "o1:4",
+      "z_index": 4,
+      "x": 24,
+      "y": 160,
+      "width": 64,
+      "height": 46,
+      "angle": 0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "ellipse"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#e5dbff",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      },
+      "parent_id": "t1:5"
+    },
+    {
+      "id": "o1:6",
+      "z_index": 6,
+      "x": 400,
+      "y": 80,
+      "width": 168,
+      "height": 80,
+      "angle": 0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "round_rect"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#d3f9d8",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      },
+      "text": {
+        "text": "完成",
+        "font_size": 24,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "o1:8",
+      "z_index": 8,
+      "x": 316,
+      "y": 216,
+      "width": 64,
+      "height": 46,
+      "angle": 0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "diamond"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#ffec99",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      }
+    },
+    {
+      "id": "a1:9",
+      "z_index": 9,
+      "x": 400,
+      "y": 226.5,
+      "width": 80,
+      "height": 25,
+      "angle": 0,
+      "type": "text_shape",
+      "text": {
+        "text": "图形样例",
+        "font_size": 20,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "a1:11",
+      "z_index": 11,
+      "x": 80,
+      "y": 341,
+      "width": 80,
+      "height": 25,
+      "angle": 0,
+      "type": "text_shape",
+      "text": {
+        "text": "原生折线",
+        "font_size": 20,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "y1:12",
+      "z_index": 12,
+      "x": 90,
+      "y": 540,
+      "width": 286,
+      "height": 74,
+      "angle": 0,
+      "type": "paint",
+      "paint": {
+        "type": "marker",
+        "width": 4,
+        "color": "#087f5b",
+        "lines": [
+          {
+            "x": 0,
+            "y": 0
+          },
+          {
+            "x": 8,
+            "y": 3
+          },
+          {
+            "x": 18,
+            "y": 7
+          },
+          {
+            "x": 28,
+            "y": 13
+          },
+          {
+            "x": 39,
+            "y": 24
+          },
+          {
+            "x": 50,
+            "y": 39
+          },
+          {
+            "x": 62,
+            "y": 55
+          },
+          {
+            "x": 77,
+            "y": 68
+          },
+          {
+            "x": 92,
+            "y": 74
+          },
+          {
+            "x": 106,
+            "y": 74
+          },
+          {
+            "x": 120,
+            "y": 67
+          },
+          {
+            "x": 135,
+            "y": 54
+          },
+          {
+            "x": 150,
+            "y": 39
+          },
+          {
+            "x": 166,
+            "y": 22
+          },
+          {
+            "x": 182,
+            "y": 12
+          },
+          {
+            "x": 200,
+            "y": 8
+          },
+          {
+            "x": 216,
+            "y": 11
+          },
+          {
+            "x": 230,
+            "y": 18
+          },
+          {
+            "x": 243,
+            "y": 30
+          },
+          {
+            "x": 253,
+            "y": 40
+          },
+          {
+            "x": 263,
+            "y": 48
+          },
+          {
+            "x": 274,
+            "y": 54
+          },
+          {
+            "x": 286,
+            "y": 57
+          }
+        ]
+      }
+    },
+    {
+      "id": "a1:13",
+      "z_index": 13,
+      "x": 90,
+      "y": 496,
+      "width": 80,
+      "height": 25,
+      "angle": 0,
+      "type": "text_shape",
+      "text": {
+        "text": "压感笔迹",
+        "font_size": 20,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "a1:14",
+      "z_index": 14,
+      "x": 630,
+      "y": 56,
+      "width": 150,
+      "height": 27.5,
+      "angle": 0,
+      "type": "text_shape",
+      "text": {
+        "text": "1 · 原生图片",
+        "font_size": 22,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "i1:15",
+      "z_index": 15,
+      "x": 630,
+      "y": 94,
+      "width": 320,
+      "height": 180,
+      "angle": 0,
+      "type": "image",
+      "image": {
+        "token": "fixture-native-image"
+      },
+      "style": {
+        "border_style": "none"
+      }
+    },
+    {
+      "id": "w1:16",
+      "z_index": 16,
+      "x": 630,
+      "y": 308,
+      "width": 250,
+      "height": 250,
+      "angle": 0,
+      "type": "sticky_note",
+      "sticky_note": {
+        "show_author_info": false,
+        "user_id": "ou_FixtureAuthor"
+      },
+      "style": {
+        "fill_color": "#fef1ce",
+        "fill_opacity": 100,
+        "fill_color_type": 0,
+        "theme_fill_color_code": 0
+      },
+      "text": {
+        "text": "继续跟进",
+        "font_size": 28,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "c1:3",
+      "z_index": 20,
+      "x": 248,
+      "y": 120,
+      "width": 152,
+      "height": 0,
+      "angle": 0,
+      "type": "connector",
+      "connector": {
+        "shape": "straight",
+        "start": {
+          "arrow_style": "none",
+          "attached_object": {
+            "id": "o1:1",
+            "snap_to": "right",
+            "position": {
+              "x": 1,
+              "y": 0.5
+            }
+          }
+        },
+        "end": {
+          "arrow_style": "line_arrow",
+          "attached_object": {
+            "id": "o1:6",
+            "snap_to": "left",
+            "position": {
+              "x": 0,
+              "y": 0.5
+            }
+          }
+        },
+        "specified_coordinate": true,
+        "start_object": {
+          "id": "o1:1",
+          "snap_to": "right",
+          "position": {
+            "x": 1,
+            "y": 0.5
+          }
+        },
+        "end_object": {
+          "id": "o1:6",
+          "snap_to": "left",
+          "position": {
+            "x": 0,
+            "y": 0.5
+          }
+        }
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid"
+      }
+    },
+    {
+      "id": "c1:10",
+      "z_index": 27,
+      "x": 80,
+      "y": 385,
+      "width": 272,
+      "height": 54,
+      "angle": 0,
+      "type": "connector",
+      "connector": {
+        "shape": "polyline",
+        "start": {
+          "arrow_style": "none",
+          "position": {
+            "x": 80,
+            "y": 385
+          }
+        },
+        "end": {
+          "arrow_style": "none",
+          "position": {
+            "x": 352,
+            "y": 439
+          }
+        },
+        "specified_coordinate": true,
+        "turning_points": [
+          {
+            "x": 85,
+            "y": 38
+          },
+          {
+            "x": 165,
+            "y": 8
+          }
+        ]
+      },
+      "style": {
+        "border_color": "#5f3dc4",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "medium",
+        "border_style": "solid"
+      }
+    }
+  ]
+}

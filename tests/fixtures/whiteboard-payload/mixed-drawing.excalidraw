@@ -1,0 +1,130 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "mixed-rectangle",
+      "type": "rectangle",
+      "x": 24,
+      "y": 36,
+      "width": 96,
+      "height": 64,
+      "angle": 0,
+      "strokeColor": "#e8590c",
+      "backgroundColor": "#ffe8cc",
+      "fillStyle": "solid",
+      "strokeStyle": "dashed",
+      "strokeWidth": 5,
+      "opacity": 75,
+      "index": "a0",
+      "roundness": null,
+      "isDeleted": false
+    },
+    {
+      "id": "mixed-line",
+      "type": "line",
+      "x": 40,
+      "y": 140,
+      "width": 80,
+      "height": 0,
+      "angle": 0,
+      "strokeColor": "#364fc7",
+      "backgroundColor": "transparent",
+      "strokeStyle": "dotted",
+      "strokeWidth": 2,
+      "opacity": 60,
+      "index": "a1",
+      "isDeleted": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          80,
+          0
+        ]
+      ],
+      "polygon": false,
+      "startBinding": null,
+      "endBinding": null,
+      "startArrowhead": null,
+      "endArrowhead": null
+    },
+    {
+      "id": "mixed-stroke",
+      "type": "freedraw",
+      "x": 160,
+      "y": 96,
+      "width": 29,
+      "height": 10,
+      "angle": 0,
+      "strokeColor": "#087f5b",
+      "strokeWidth": 4,
+      "index": "a2",
+      "isDeleted": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -4,
+          10
+        ],
+        [
+          25,
+          8
+        ]
+      ],
+      "pressures": [
+        0.2,
+        0.6,
+        0.9
+      ],
+      "simulatePressure": false
+    },
+    {
+      "id": "mixed-note",
+      "type": "stickynote",
+      "x": 240,
+      "y": 40,
+      "width": 160,
+      "height": 90,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "#ffdf6b",
+      "fillStyle": "solid",
+      "index": "a3",
+      "isDeleted": false,
+      "baseHeight": 90,
+      "boundElements": [{ "id": "mixed-note-text", "type": "text" }]
+    },
+    {
+      "id": "mixed-note-text",
+      "type": "text",
+      "x": 298,
+      "y": 71.25,
+      "width": 44,
+      "height": 27.5,
+      "angle": 0,
+      "strokeColor": "#343a40",
+      "index": "a4",
+      "isDeleted": false,
+      "text": "跟进",
+      "originalText": "跟进",
+      "fontSize": 22,
+      "fontFamily": 5,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "containerId": "mixed-note",
+      "autoResize": true,
+      "lineHeight": 1.25
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {}
+}

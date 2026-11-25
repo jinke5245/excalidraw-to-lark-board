@@ -1,14 +1,6 @@
-import { Buffer } from "node:buffer";
-import { readFileSync } from "node:fs";
+import { assert, expect, test } from "vitest";
 
-import { expect, test } from "vitest";
-
-import { convert, PNG_SIGNATURE } from "./index.js";
-import type { RasterAsset } from "./index.js";
-
-const pngDataUrl =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLttAAAAABJRU5ErkJggg==";
-const snapshot: RasterAsset = { suffix: ".png", data: Buffer.from("pixels") };
+import { convert } from "./index.js";
 
 function element(
   id: string,
@@ -36,13 +28,20 @@ test("converts lines to native connectors without arrowheads", async () => {
         width: 60,
         height: 0,
         points: [
-          [0, 0],
-          [60, 0],
+          [
+            0,
+            0,
+          ],
+          [
+            60,
+            0,
+          ],
         ],
       }),
     ),
   );
   expect(warnings).toEqual([]);
+  assert.isDefined(line);
   expect(line.type).toBe("connector");
   expect(line.connector).toMatchObject({
     shape: "straight",
@@ -61,16 +60,30 @@ test("converts freehand strokes to native paint with uniform width", async () =>
     scene(
       element("stroke", "freedraw", 80, 110, {
         points: [
-          [0, 0],
-          [-4, 10],
-          [25, 8],
+          [
+            0,
+            0,
+          ],
+          [
+            -4,
+            10,
+          ],
+          [
+            25,
+            8,
+          ],
         ],
-        pressures: [0.2, 0.6, 0.9],
+        pressures: [
+          0.2,
+          0.6,
+          0.9,
+        ],
         strokeWidth: 4,
         strokeColor: "#087f5b",
       }),
     ),
   );
+  assert.isDefined(stroke);
   expect(stroke).toMatchObject({
     type: "paint",
     x: 76,
@@ -108,128 +121,58 @@ test("keeps sticky-note text in a single native note", async () => {
   });
 });
 
-test("preserves iframe geometry in its snapshot node", async () => {
-  const assets = new Map<string, RasterAsset>();
-  const {
-    payload: {
-      nodes: [image],
-    },
-    warnings,
-  } = await convert(scene(element("web", "iframe", 80, 120)), {
-    assets,
-    snapshots: new Map([["web", snapshot]]),
-  });
-  expect(warnings).toEqual([]);
-  expect(image).toMatchObject({
-    type: "image",
-    x: 80,
-    y: 120,
-    width: 100,
-    height: 50,
-  });
-  expect(assets).toEqual(new Map([[image.id, snapshot]]));
-});
-
-test("preserves the source link and frame for an embeddable caption", async () => {
-  const link = "https://example.com/page?query=1#part";
-  const {
-    payload: {
-      nodes: [section, image, caption],
-    },
-    warnings,
-  } = await convert(
+test("skips embed elements and keeps supported Magic Frame children on the canvas", async () => {
+  const { payload, warnings } = await convert(
     scene(
-      element("web", "embeddable", 70, 120, { link, frameId: "frame" }),
-      element("frame", "frame", 50, 60, { width: 320, height: 240 }),
+      element("plain", "text", 30, 40, { text: "普通文字" }),
+      element("html", "iframe", 0, 0, {
+        customData: { feishuSnapshot: "unused" },
+      }),
+      element("magic", "magicframe", 100, 200),
+      element("child", "rectangle", 110, 220, { frameId: "magic" }),
+      element("web", "embeddable", 0, 0, { link: "https://example.com/" }),
     ),
-    { assets: new Map(), snapshots: new Map([["web", snapshot]]) },
   );
-  expect(warnings).toEqual([]);
-  expect(image.type).toBe("image");
-  expect(caption).toMatchObject({
-    type: "text_shape",
-    parent_id: section.id,
-    x: 20,
-    y: 120,
-  });
-  expect(caption.text?.rich_text?.paragraphs[0].elements).toEqual([
-    expect.objectContaining({
-      element_type: 1,
-      link_element: expect.objectContaining({ herf: link }),
-    }),
+  expect(payload.nodes).toMatchObject([
+    {
+      id: "a1:1",
+      type: "text_shape",
+      x: 30,
+      y: 40,
+      text: { text: "普通文字" },
+    },
+    { id: "o1:2", type: "composite_shape", x: 110, y: 220 },
+  ]);
+  expect(payload.nodes[1]).not.toHaveProperty("parent_id");
+  expect(warnings).toEqual([
+    "html: skipped unsupported element type 'iframe'",
+    "magic: skipped unsupported element type 'magicframe'",
+    "web: skipped unsupported element type 'embeddable'",
   ]);
 });
 
-test.each([
-  "file:///private/local.html",
-  "https://@example.com",
-  "https:example.com",
-])("rejects invalid source URLs for embeddable captions (%s)", async (link) => {
+test("rejects a scene with no convertible nodes", async () => {
   await expect(
-    convert(scene(element("web", "embeddable", 0, 0, { link })), {
-      assets: new Map(),
-      snapshots: new Map([["web", snapshot]]),
-    }),
-  ).rejects.toThrow(/HTTP or HTTPS/);
-});
-
-test("collects snapshot data from the scene, preferring explicit overrides", async () => {
-  const html = {
-    generationData: { status: "done", html: "<p>Hello</p>" },
-    feishuSnapshot: pngDataUrl,
-  };
-  const source = scene(
-    element("web", "embeddable", 80, 100, {
-      link: "https://example.com/",
-      customData: { feishuSnapshot: pngDataUrl },
-    }),
-    element("html", "iframe", 80, 200, { customData: html }),
-  );
-  const assets = new Map<string, RasterAsset>();
-  const override: RasterAsset = {
-    suffix: ".png",
-    data: Buffer.from("explicit override"),
-  };
-  const { payload, warnings } = await convert(source, {
-    assets,
-    snapshots: new Map([["html", override]]),
-  });
-  expect(warnings).toEqual([]);
-  expect(payload.nodes.map((node) => node.type)).toEqual([
-    "image",
-    "text_shape",
-    "image",
-  ]);
-  expect(assets.get("i1:1")?.data.subarray(0, PNG_SIGNATURE.length)).toEqual(
-    PNG_SIGNATURE,
-  );
-  expect(assets.get("i1:2")).toEqual(override);
-  expect(html.generationData.html).toBe("<p>Hello</p>");
-});
-
-test("replaces a snapshotted Magic Frame and its children", async () => {
-  const {
-    payload: { nodes },
-    warnings,
-  } = await convert(
-    scene(
-      element("inside", "rectangle", 110, 120, { frameId: "magic" }),
-      element("magic", "magicframe", 100, 110),
-      element("outside", "text", 250, 110, { text: "保留文字" }),
+    convert(
+      scene(
+        element("html", "iframe"),
+        element("web", "embeddable"),
+        element("magic", "magicframe"),
+      ),
     ),
-    { assets: new Map(), snapshots: new Map([["magic", snapshot]]) },
+  ).rejects.toThrow(
+    "expected 1–3000 convertible nodes for a single Feishu request",
   );
-  expect(warnings).toEqual([]);
-  expect(nodes).toMatchObject([
-    { type: "image", x: 100, y: 110 },
-    { type: "text_shape", text: { text: "保留文字" } },
-  ]);
 });
 
 test("preserves Chinese labels and binds arrow endpoints to their shapes", async () => {
   const {
     payload: {
-      nodes: [left, right, arrow],
+      nodes: [
+        left,
+        right,
+        arrow,
+      ],
     },
     warnings,
   } = await convert(
@@ -238,10 +181,22 @@ test("preserves Chinese labels and binds arrow endpoints to their shapes", async
       element("b", "rectangle", 200),
       element("arrow", "arrow", 105, 25, {
         points: [
-          [0, 0],
-          [90, 0],
+          [
+            0,
+            0,
+          ],
+          [
+            90,
+            0,
+          ],
         ],
-        startBinding: { elementId: "a", fixedPoint: [1, 0.5] },
+        startBinding: {
+          elementId: "a",
+          fixedPoint: [
+            1,
+            0.5,
+          ],
+        },
         endBinding: { elementId: "b", focus: 0, gap: 5 },
       }),
       element("label-a", "text", 0, 0, { text: "开始", containerId: "a" }),
@@ -249,7 +204,16 @@ test("preserves Chinese labels and binds arrow endpoints to their shapes", async
     ),
   );
   expect(warnings).toEqual([]);
-  expect([left.text?.text, right.text?.text]).toEqual(["开始", "完成"]);
+  assert.isDefined(left);
+  assert.isDefined(right);
+  assert.isDefined(arrow);
+  expect([
+    left.text?.text,
+    right.text?.text,
+  ]).toEqual([
+    "开始",
+    "完成",
+  ]);
   expect(arrow.connector?.start.attached_object).toEqual({
     id: left.id,
     snap_to: "right",
@@ -296,13 +260,20 @@ test("keeps an unavailable binding as a free endpoint and warns", async () => {
     scene(
       element("arrow", "arrow", 40, 20, {
         points: [
-          [0, 0],
-          [90, 50],
+          [
+            0,
+            0,
+          ],
+          [
+            90,
+            50,
+          ],
         ],
         startBinding: { elementId: "missing" },
       }),
     ),
   );
+  assert.isDefined(arrow);
   expect(arrow.connector?.start.position).toEqual({ x: 40, y: 20 });
   expect(arrow.connector?.end.position).toEqual({ x: 130, y: 70 });
   expect(warnings[0]).toContain("missing");
@@ -317,9 +288,18 @@ test("makes a bent arrow's turning point-relative coordinates local to its path 
     scene(
       element("arrow", "arrow", 40, 20, {
         points: [
-          [0, 0],
-          [15, -10],
-          [40, 5],
+          [
+            0,
+            0,
+          ],
+          [
+            15,
+            -10,
+          ],
+          [
+            40,
+            5,
+          ],
         ],
       }),
     ),
@@ -336,7 +316,13 @@ test("makes a bent arrow's turning point-relative coordinates local to its path 
 test("keeps frame children local and cross-section arrows at canvas level", async () => {
   const {
     payload: {
-      nodes: [section, left, text, right, arrow],
+      nodes: [
+        section,
+        left,
+        text,
+        right,
+        arrow,
+      ],
     },
     warnings,
   } = await convert(
@@ -345,12 +331,30 @@ test("keeps frame children local and cross-section arrows at canvas level", asyn
       element("note", "text", 85, 120, { frameId: "frame", text: "分区内" }),
       element("edge", "arrow", 180, 110, {
         points: [
-          [0, 0],
-          [65, 0],
+          [
+            0,
+            0,
+          ],
+          [
+            65,
+            0,
+          ],
         ],
         frameId: "frame",
-        startBinding: { elementId: "a", fixedPoint: [1, 0.5] },
-        endBinding: { elementId: "b", fixedPoint: [0, 0.5] },
+        startBinding: {
+          elementId: "a",
+          fixedPoint: [
+            1,
+            0.5,
+          ],
+        },
+        endBinding: {
+          elementId: "b",
+          fixedPoint: [
+            0,
+            0.5,
+          ],
+        },
       }),
       element("frame", "frame", 50, 60, {
         width: 150,
@@ -361,6 +365,10 @@ test("keeps frame children local and cross-section arrows at canvas level", asyn
     ),
   );
   expect(warnings).toEqual([]);
+  assert.isDefined(section);
+  assert.isDefined(left);
+  assert.isDefined(right);
+  assert.isDefined(arrow);
   expect(section).toMatchObject({
     type: "section",
     section: { title: "处理分区" },
@@ -389,8 +397,14 @@ test("rejects duplicate IDs and non-numeric points", async () => {
       scene(
         element("arrow", "arrow", 0, 0, {
           points: [
-            [0, 0],
-            [true, 1],
+            [
+              0,
+              0,
+            ],
+            [
+              true,
+              1,
+            ],
           ],
         }),
       ),
@@ -404,28 +418,17 @@ test("rejects finite source coordinates that overflow after conversion", async (
       scene(
         element("edge", "arrow", 0, 0, {
           points: [
-            [1e308, 0],
-            [1e308, 1],
+            [
+              1e308,
+              0,
+            ],
+            [
+              1e308,
+              1,
+            ],
           ],
         }),
       ),
     ),
   ).rejects.toThrow(/coordinates must be finite/);
 });
-
-test.each(["feishu-poc", "feishu-frame-poc"])(
-  "matches the checked-in %s node JSON",
-  async (filename) => {
-    const root = new URL("../../examples/", import.meta.url);
-    const source: unknown = JSON.parse(
-      readFileSync(new URL(`${filename}.excalidraw`, root), "utf8"),
-    );
-    const baseline = readFileSync(
-      new URL(`${filename}.nodes.json`, root),
-      "utf8",
-    );
-    const { payload, warnings } = await convert(source);
-    expect(warnings).toEqual([]);
-    expect(JSON.stringify(payload)).toBe(JSON.stringify(JSON.parse(baseline)));
-  },
-);

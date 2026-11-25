@@ -3,15 +3,22 @@ import { hasKey, isRecord } from "./model.js";
 import type { InputRecord, SourceElement } from "./model.js";
 
 /** Identifying bytes at the start of a PNG. */
-export const PNG_SIGNATURE = Buffer.from([
-  0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a,
+const PNG_SIGNATURE = Buffer.from([
+  0x89,
+  0x50,
+  0x4e,
+  0x47,
+  0x0d,
+  0x0a,
+  0x1a,
+  0x0a,
 ]);
 
 /** Validated raster bytes with the extension used for upload. */
 export type RasterAsset = { suffix: ".png" | ".jpg"; data: Buffer };
 
 /** Decode and validate an embedded PNG or JPEG data URL. */
-export function rasterAsset(value: unknown): RasterAsset {
+function rasterAsset(value: unknown): RasterAsset {
   if (typeof value !== "string") {
     throw new TypeError("expected a PNG or JPEG data URL");
   }
@@ -30,7 +37,13 @@ export function rasterAsset(value: unknown): RasterAsset {
   }
   const suffix = header === "data:image/png;base64" ? ".png" : ".jpg";
   const signature =
-    suffix === ".png" ? PNG_SIGNATURE : Buffer.from([0xff, 0xd8, 0xff]);
+    suffix === ".png"
+      ? PNG_SIGNATURE
+      : Buffer.from([
+          0xff,
+          0xd8,
+          0xff,
+        ]);
   if (!data.subarray(0, signature.length).equals(signature)) {
     throw new Error(`invalid ${suffix} image signature`);
   }
@@ -42,7 +55,13 @@ export function embeddedRaster(
   scene: InputRecord,
   element: SourceElement,
 ): RasterAsset {
-  const scale = element.scale === undefined ? [1, 1] : element.scale;
+  const scale =
+    element.scale === undefined
+      ? [
+          1,
+          1,
+        ]
+      : element.scale;
   // shortcut: preserve original pixels, add transforms when crop or flip support is needed.
   if (
     element.crop ||

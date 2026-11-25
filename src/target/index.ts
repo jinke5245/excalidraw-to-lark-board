@@ -43,10 +43,13 @@ export async function resolveTarget(
   value: string,
   runLark: (args: string[]) => Promise<unknown>,
 ): Promise<Target> {
-  if (/[\p{White_Space}\u0000-\u001F\u007F]/u.test(value)) {
-    throw new Error(
-      "invalid whitespace or control character in Feishu target URL",
-    );
+  for (const character of value) {
+    const code = character.charCodeAt(0);
+    if (code < 0x20 || code === 0x7f || /\p{White_Space}/u.test(character)) {
+      throw new Error(
+        "invalid whitespace or control character in Feishu target URL",
+      );
+    }
   }
 
   // Check the supplied path and authority before URL normalization can change them.

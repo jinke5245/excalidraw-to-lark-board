@@ -1,0 +1,104 @@
+{
+  "nodes": [
+    {
+      "id": "o1:1",
+      "z_index": 1,
+      "x": 24,
+      "y": 36,
+      "width": 96,
+      "height": 64,
+      "angle": 0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "rect"
+      },
+      "style": {
+        "border_color": "#e8590c",
+        "border_color_type": 1,
+        "border_opacity": 75,
+        "border_width": "bold",
+        "border_style": "dash",
+        "fill_color": "#ffe8cc",
+        "fill_color_type": 1,
+        "fill_opacity": 75
+      }
+    },
+    {
+      "id": "y1:3",
+      "z_index": 3,
+      "x": 156,
+      "y": 96,
+      "width": 29,
+      "height": 10,
+      "angle": 0,
+      "type": "paint",
+      "paint": {
+        "type": "marker",
+        "width": 4,
+        "color": "#087f5b",
+        "lines": [
+          { "x": 4, "y": 0 },
+          { "x": 0, "y": 10 },
+          { "x": 29, "y": 8 }
+        ]
+      }
+    },
+    {
+      "id": "w1:4",
+      "z_index": 4,
+      "x": 240,
+      "y": 40,
+      "width": 160,
+      "height": 90,
+      "angle": 0,
+      "type": "sticky_note",
+      "sticky_note": {
+        "show_author_info": false,
+        "user_id": "ou_FixtureAuthor"
+      },
+      "style": {
+        "fill_color": "#fef1ce",
+        "fill_opacity": 100,
+        "fill_color_type": 0,
+        "theme_fill_color_code": 0
+      },
+      "text": {
+        "text": "跟进",
+        "font_size": 22,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "text_color": "#343a40",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "c1:2",
+      "z_index": 2,
+      "x": 40,
+      "y": 140,
+      "width": 80,
+      "height": 0,
+      "angle": 0,
+      "type": "connector",
+      "connector": {
+        "shape": "straight",
+        "start": {
+          "arrow_style": "none",
+          "position": { "x": 40, "y": 140 }
+        },
+        "end": {
+          "arrow_style": "none",
+          "position": { "x": 120, "y": 140 }
+        },
+        "specified_coordinate": true
+      },
+      "style": {
+        "border_color": "#364fc7",
+        "border_color_type": 1,
+        "border_opacity": 60,
+        "border_width": "narrow",
+        "border_style": "dot"
+      }
+    }
+  ]
+}

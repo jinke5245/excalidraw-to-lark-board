@@ -24,26 +24,17 @@ import type {
   SourceElement,
   SupportedElement,
 } from "./model.js";
-import { embeddedRaster, rasterAsset } from "./raster.js";
+import { embeddedRaster } from "./raster.js";
 import type { RasterAsset } from "./raster.js";
 
 export type { BoardNode } from "./model.js";
-export { PNG_SIGNATURE } from "./raster.js";
 export type { RasterAsset } from "./raster.js";
 
-/** Inputs for image collection and snapshot overrides during conversion. */
+/** Inputs for image collection during conversion. */
 export type ConversionOptions = {
   /** Receives image bytes keyed by the corresponding Feishu node ID. */
   assets?: Map<string, RasterAsset>;
-  /** Caller-supplied snapshots keyed by the source element ID. */
-  snapshots?: Map<string, RasterAsset>;
-  /** Renders selected elements that lack a supplied or embedded snapshot. */
-  autoRender?: (elementIds: string[]) => Promise<Map<string, RasterAsset>>;
 };
-
-function isSnapshotType(type: unknown): boolean {
-  return type === "iframe" || type === "magicframe" || type === "embeddable";
-}
 
 function nodeText(element: SourceElement, bound = false): BoardText {
   const text = element.text === undefined ? element.originalText : element.text;
@@ -76,58 +67,13 @@ function nodeText(element: SourceElement, bound = false): BoardText {
   };
 }
 
-function snapshotLink(node: BoardNode, index: number, url: unknown): BoardNode {
-  const error = "embeddable requires a valid HTTP or HTTPS source link";
-  if (
-    typeof url !== "string" ||
-    url.length > 1000 ||
-    /[\s\\]/.test(url) ||
-    [...url].some(
-      (character) =>
-        character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127,
-    )
-  ) {
-    throw new Error(error);
-  }
-  const authority = /^https?:\/\/([^/?#]+)/i.exec(url)?.[1];
-  if (!authority || authority.includes("@") || !URL.canParse(url)) {
-    throw new Error(error);
-  }
-  const caption = "打开原网页 ↗";
-  const link = {
-    element_type: 1,
-    link_element: {
-      herf: url,
-      text: caption,
-      text_style: { font_size: 18, text_color: "#1456f0", underline: true },
-    },
-  };
-  return {
-    id: `a1:${index}`,
-    type: "text_shape",
-    x: node.x,
-    y: node.y + node.height + 10,
-    width: Math.max(node.width, 160),
-    height: 28,
-    z_index: node.z_index,
-    text: {
-      text: caption,
-      font_size: 18,
-      horizontal_align: "left",
-      vertical_align: "mid",
-      rich_text: { paragraphs: [{ paragraph_type: 0, elements: [link] }] },
-    },
-    ...(node.parent_id !== undefined && { parent_id: node.parent_id }),
-  };
-}
-
 /**
  * Convert Excalidraw v2 scene JSON into a Feishu create-nodes payload.
- * Use the options to collect images or generate screenshots without contacting Feishu.
+ * Use the options to collect native image bytes without contacting Feishu.
  */
 export async function convert(
   scene: unknown,
-  { assets, snapshots: suppliedSnapshots, autoRender }: ConversionOptions = {},
+  { assets }: ConversionOptions = {},
 ): Promise<{ payload: { nodes: BoardNode[] }; warnings: string[] }> {
   if (
     !isRecord(scene) ||
@@ -137,74 +83,24 @@ export async function convert(
   ) {
     throw new Error("expected an Excalidraw v2 scene with an elements array");
   }
-  const live = new Map<string, SourceElement>();
+  const warnings: string[] = [];
+  const elements = new Map<string, SupportedElement>();
   const seen = new Set<string>();
   for (const element of scene.elements as unknown[]) {
     if (!isRecord(element) || typeof element.id !== "string" || !element.id) {
       throw new Error("every element must have a nonempty string id");
     }
-    const { id } = element;
+    const { id, type } = element;
     if (seen.has(id)) throw new Error(`duplicate element id: ${id}`);
     seen.add(id);
-    if (!element.isDeleted) live.set(id, { ...element, id });
-  }
-
-  const snapshots = new Map(suppliedSnapshots);
-  const targets = new Map(
-    [...live].filter(([, element]) => isSnapshotType(element.type)),
-  );
-  for (const [id, { customData }] of targets) {
-    if (
-      snapshots.has(id) ||
-      !isRecord(customData) ||
-      !Object.hasOwn(customData, "feishuSnapshot")
-    )
-      continue;
-    const asset = rasterAsset(customData.feishuSnapshot);
-    if (asset.suffix !== ".png")
-      throw new Error(`${id}: embedded snapshot must be PNG`);
-    snapshots.set(id, asset);
-  }
-  for (const id of snapshots.keys()) {
-    if (!targets.has(id))
-      throw new Error(
-        `${id}: snapshot must target an existing iframe, magicframe, or embeddable`,
-      );
-  }
-  const selected = [...(autoRender ? targets : snapshots).keys()];
-  const flattened = new Set<unknown>(
-    selected.filter((id) => targets.get(id)?.type === "magicframe"),
-  );
-  for (const id of selected) {
-    if (flattened.has(targets.get(id)?.frameId)) {
-      throw new Error(
-        `${id}: nested embeds inside a snapshotted magicframe are unsupported`,
-      );
-    }
-  }
-  const missing = selected.filter((id) => !snapshots.has(id));
-  if (autoRender && missing.length) {
-    const generated = await autoRender(missing);
-    for (const id of missing) {
-      const snapshot = generated.get(id);
-      if (!snapshot)
-        throw new Error(`${id}: renderer did not return a snapshot`);
-      snapshots.set(id, snapshot);
-    }
-  }
-
-  const warnings: string[] = [];
-  const elements = new Map<string, SupportedElement>();
-  for (const [id, element] of live) {
-    if (flattened.has(element.frameId)) continue;
-    const type = snapshots.has(id) ? "image" : element.type;
+    if (element.isDeleted) continue;
     if (!hasKey(PREFIXES, type)) {
       warnings.push(
         `${id}: skipped unsupported element type ${describe(type)}`,
       );
       continue;
     }
-    elements.set(id, { ...element, type });
+    elements.set(id, { ...element, id, type });
   }
 
   const labels = new Map<string, BoardText>();
@@ -227,7 +123,10 @@ export async function convert(
 
   const sections = new Map<string, BaseNode & BoardNode>();
   const ordered = [...elements.values()];
-  for (const [offset, element] of ordered.entries()) {
+  for (const [
+    offset,
+    element,
+  ] of ordered.entries()) {
     if (element.type !== "frame") continue;
     const index = offset + 1;
     const title = element.name || "分区";
@@ -245,7 +144,10 @@ export async function convert(
   const nodes: BoardNode[] = [...sections.values()];
   const connectors: { element: SupportedElement; base: BaseNode }[] = [];
   const shapes = new Map<string, BaseNode>(sections);
-  for (const [offset, element] of ordered.entries()) {
+  for (const [
+    offset,
+    element,
+  ] of ordered.entries()) {
     const { id, type } = element;
     if (boundLabels.has(id) || type === "frame") continue;
     const index = offset + 1;
@@ -267,7 +169,7 @@ export async function convert(
         throw new Error(
           `${id}: image nodes need a Feishu target URL or --whiteboard-token`,
         );
-      assets.set(base.id, snapshots.get(id) ?? embeddedRaster(scene, element));
+      assets.set(base.id, embeddedRaster(scene, element));
       node = {
         ...base,
         type: "image",
@@ -313,7 +215,12 @@ export async function convert(
           type: "marker",
           width,
           color: color(element.strokeColor) ?? "#1b1b1f",
-          lines: points.map(([px, py]) => ({ x: px - x, y: py - y })),
+          lines: points.map(
+            ([
+              px,
+              py,
+            ]) => ({ x: px - x, y: py - y }),
+          ),
         },
       };
       if (
@@ -349,9 +256,6 @@ export async function convert(
       };
     }
     nodes.push(node);
-    if (snapshots.has(id) && live.get(id)?.type === "embeddable") {
-      nodes.push(snapshotLink(node, index, element.link));
-    }
   }
 
   for (const { element, base } of connectors) {
@@ -372,7 +276,14 @@ export async function convert(
     );
   }
   for (const { id, x, y, width, height } of nodes) {
-    if (![x, y, width, height].every(Number.isFinite)) {
+    if (
+      ![
+        x,
+        y,
+        width,
+        height,
+      ].every(Number.isFinite)
+    ) {
       throw new Error(id + ": converted coordinates must be finite");
     }
   }

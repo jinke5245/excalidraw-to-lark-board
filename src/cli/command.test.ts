@@ -2,16 +2,17 @@ import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, isAbsolute } from "node:path";
 import { afterEach, beforeEach, expect, test, vi } from "vitest";
-import { type RasterAsset } from "../converter/index.js";
 import { type RunLark } from "../lark/client.js";
 import { runCli } from "./command.js";
-import { type ImportDependencies } from "./import.js";
 
 const PNG =
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4z8DwHwAFgAI/ScLttAAAAABJRU5ErkJggg==";
 const pixels = Buffer.from(PNG, "base64");
 const target = "https://example.feishu.cn/docx/docxTest";
-const boardArgs = ["--whiteboard-token", "wbcnTest"];
+const boardArgs = [
+  "--whiteboard-token",
+  "wbcnTest",
+];
 const success = (data: unknown) => ({
   status: 0,
   stdout: JSON.stringify({ ok: true, data }),
@@ -19,10 +20,9 @@ const success = (data: unknown) => ({
 });
 const empty = { status: 0, stdout: "", stderr: "" };
 const runLark = vi.fn<RunLark>();
-const renderSnapshots = vi.fn<ImportDependencies["renderSnapshots"]>();
 const stdout = vi.fn<(text: string) => void>();
 const stderr = vi.fn<(text: string) => void>();
-const dependencies = { runLark, renderSnapshots, stdout, stderr };
+const dependencies = { runLark, stdout, stderr };
 let directory: string;
 let input: string;
 
@@ -45,8 +45,9 @@ async function writeScene(elements: unknown[], files = {}) {
 
 function option(args: string[], name: string): string {
   const index = args.indexOf(name);
-  expect(index).toBeGreaterThanOrEqual(0);
-  return args[index + 1];
+  const value = index === -1 ? undefined : args[index + 1];
+  if (value === undefined) throw new Error("missing value for " + name);
+  return value;
 }
 
 beforeEach(async () => {
@@ -63,7 +64,16 @@ test("shows help and rejects conflicting import destinations", async () => {
   expect(stdout).toHaveBeenCalledWith(
     expect.stringContaining("<input> [target]"),
   );
-  expect(await runCli([input, target, ...boardArgs], dependencies)).toBe(2);
+  expect(
+    await runCli(
+      [
+        input,
+        target,
+        ...boardArgs,
+      ],
+      dependencies,
+    ),
+  ).toBe(2);
   expect(stderr).toHaveBeenCalledWith(
     expect.stringContaining("either a target URL or --whiteboard-token"),
   );
@@ -81,7 +91,10 @@ test("uses the signed-in author for native sticky notes", async () => {
         }),
       };
     }
-    expect(args.slice(0, 2)).toEqual(["whiteboard", "+update"]);
+    expect(args.slice(0, 2)).toEqual([
+      "whiteboard",
+      "+update",
+    ]);
     expect(JSON.parse(data!)).toMatchObject({
       nodes: [
         { type: "sticky_note", sticky_note: { user_id: "ou_TestAuthor" } },
@@ -89,33 +102,35 @@ test("uses the signed-in author for native sticky notes", async () => {
     });
     return empty;
   });
-  expect(await runCli([input, ...boardArgs], dependencies)).toBe(0);
-  expect(runLark.mock.calls[0][0]).toEqual(["auth", "status", "--json"]);
+  expect(
+    await runCli(
+      [
+        input,
+        ...boardArgs,
+      ],
+      dependencies,
+    ),
+  ).toBe(0);
+  expect(runLark.mock.calls[0]?.[0]).toEqual([
+    "auth",
+    "status",
+    "--json",
+  ]);
 });
 
-test("renders before board creation and keeps both request tokens stable across retries", async () => {
-  await writeScene([
-    element("web", "embeddable", { link: "https://example.com/" }),
-    element("html", "iframe"),
-    element("magic", "magicframe"),
-  ]);
-  const calls: string[] = [];
+test("creates and imports a document board with stable retry tokens", async () => {
+  await writeScene([element("asset", "image", { fileId: "source" })], {
+    source: { dataURL: `data:image/png;base64,${PNG}` },
+  });
   const creationTokens: string[] = [];
   const updateTokens: string[] = [];
-  for (const capture of [
-    pixels,
-    Buffer.concat([pixels, Buffer.from("new capture")]),
+
+  for (const mediaToken of [
+    "firstMediaToken",
+    "secondMediaToken",
   ]) {
-    renderSnapshots.mockImplementation(async (_scene, ids) => {
-      calls.push("render");
-      expect(ids).toEqual(["web", "html", "magic"]);
-      return new Map<string, RasterAsset>(
-        ids.map((id) => [id, { suffix: ".png", data: capture }]),
-      );
-    });
     runLark.mockImplementation(async (args, data) => {
       if (args[0] === "api") {
-        calls.push("create");
         expect(args.slice(0, 3)).toEqual([
           "api",
           "POST",
@@ -137,49 +152,84 @@ test("renders before board creation and keeps both request tokens stable across 
         });
       }
       if (args[0] === "docs") {
-        calls.push("upload");
         expect(option(args, "--parent-node")).toBe("wbcnTest");
-        const file = option(args, "--file");
-        expect(isAbsolute(file)).toBe(false);
-        expect(await readFile(file)).toEqual(capture);
-        return success({ file_token: "mediaToken" });
+        return success({ file_token: mediaToken });
       }
-      calls.push("write");
       expect(option(args, "--whiteboard-token")).toBe("wbcnTest");
       updateTokens.push(option(args, "--idempotent-token"));
-      const { nodes } = JSON.parse(data!);
-      expect(nodes.map((node: { type: string }) => node.type)).toEqual([
-        "image",
-        "text_shape",
-        "image",
-        "image",
-      ]);
-      expect(
-        nodes[1].text.rich_text.paragraphs[0].elements[0].link_element.herf,
-      ).toBe("https://example.com/");
+      if (!data) throw new Error("expected the native image payload");
+      expect(JSON.parse(data)).toMatchObject({
+        nodes: [{ type: "image", image: { token: mediaToken } }],
+      });
       return empty;
     });
-    expect(await runCli([input, target], dependencies)).toBe(0);
-    expect(stderr).toHaveBeenCalledWith(
-      expect.stringContaining(`${target}#doxcnTest`),
-    );
+    expect(
+      await runCli(
+        [
+          input,
+          target,
+        ],
+        dependencies,
+      ),
+    ).toBe(0);
   }
-  const cycle = ["render", "create", "upload", "upload", "upload", "write"];
-  expect(calls).toEqual([...cycle, ...cycle]);
-  expect(creationTokens).toHaveLength(2);
-  expect(creationTokens[0]).toMatch(
-    /^[\da-f]{8}-[\da-f]{4}-5[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/,
+
+  expect(stderr).toHaveBeenCalledWith(
+    expect.stringContaining(`${target}#doxcnTest`),
   );
-  expect(creationTokens[1]).toBe(creationTokens[0]);
-  expect(updateTokens[1]).toBe(updateTokens[0]);
+  expect(runLark.mock.calls.map(([args]) => args[0])).toEqual([
+    "api",
+    "docs",
+    "whiteboard",
+    "api",
+    "docs",
+    "whiteboard",
+  ]);
+  for (const [
+    first,
+    retry,
+  ] of [
+    creationTokens,
+    updateTokens,
+  ]) {
+    expect(first).toMatch(
+      /^[\da-f]{8}-[\da-f]{4}-5[\da-f]{3}-[89ab][\da-f]{3}-[\da-f]{12}$/,
+    );
+    expect(retry).toBe(first);
+  }
 });
 
-test("leaves a document untouched when automatic capture fails", async () => {
-  await writeScene([element("html", "iframe")]);
-  renderSnapshots.mockRejectedValue(new Error("renderer failed"));
-  expect(await runCli([input, target], dependencies)).toBe(1);
+test("leaves a document untouched when an embedded image is missing", async () => {
+  await writeScene([element("asset", "image", { fileId: "missing" })]);
+  expect(
+    await runCli(
+      [
+        input,
+        target,
+      ],
+      dependencies,
+    ),
+  ).toBe(1);
   expect(stderr).toHaveBeenCalledWith(
-    expect.stringContaining("renderer failed"),
+    expect.stringContaining("missing embedded image file"),
+  );
+  expect(runLark).not.toHaveBeenCalled();
+});
+
+test("rejects the removed snapshot option before importing", async () => {
+  expect(
+    await runCli(
+      [
+        input,
+        target,
+        "--snapshot",
+        "web=page.png",
+      ],
+      dependencies,
+    ),
+  ).toBe(2);
+  expect(stderr).toHaveBeenCalledWith(
+    expect.stringContaining("unknown option '--snapshot'"),
   );
   expect(runLark).not.toHaveBeenCalled();
 });
@@ -204,10 +254,24 @@ test("writes to an anchored whiteboard without creating another block", async ()
     expect(option(args, "--whiteboard-token")).toBe("wbcnTest");
     return empty;
   });
-  expect(await runCli([input, `${target}#doxcnTest`], dependencies)).toBe(0);
+  expect(
+    await runCli(
+      [
+        input,
+        `${target}#doxcnTest`,
+      ],
+      dependencies,
+    ),
+  ).toBe(0);
   expect(runLark.mock.calls.map(([args]) => args.slice(0, 2))).toEqual([
-    ["api", "GET"],
-    ["whiteboard", "+update"],
+    [
+      "api",
+      "GET",
+    ],
+    [
+      "whiteboard",
+      "+update",
+    ],
   ]);
 });
 
@@ -222,6 +286,7 @@ test("uploads a scene's native image and removes the staged file", async () => {
   runLark.mockImplementation(async (args, data) => {
     if (args[0] === "docs") {
       stagedFile = option(args, "--file");
+      expect(isAbsolute(stagedFile)).toBe(false);
       expect(await readFile(stagedFile)).toEqual(pixels);
       return success({ file_token: "assetToken" });
     }
@@ -230,12 +295,25 @@ test("uploads a scene's native image and removes the staged file", async () => {
     });
     return empty;
   });
-  expect(await runCli([input, ...boardArgs], dependencies)).toBe(0);
+  expect(
+    await runCli(
+      [
+        input,
+        ...boardArgs,
+      ],
+      dependencies,
+    ),
+  ).toBe(0);
   expect(runLark.mock.calls.map(([args]) => args.slice(0, 2))).toEqual([
-    ["docs", "+media-upload"],
-    ["whiteboard", "+update"],
+    [
+      "docs",
+      "+media-upload",
+    ],
+    [
+      "whiteboard",
+      "+update",
+    ],
   ]);
-  expect(renderSnapshots).not.toHaveBeenCalled();
   await expect(readFile(stagedFile)).rejects.toMatchObject({ code: "ENOENT" });
 });
 
@@ -246,22 +324,56 @@ test("passes stdout JSON to Lark without mixing its response and propagates the 
     stdout: "lark response\n",
     stderr: "lark error\n",
   });
-  expect(await runCli([input, ...boardArgs], dependencies)).toBe(7);
-  const [[args, data]] = runLark.mock.calls;
+  expect(
+    await runCli(
+      [
+        input,
+        ...boardArgs,
+      ],
+      dependencies,
+    ),
+  ).toBe(7);
+  const [request] = runLark.mock.calls;
+  if (!request) throw new Error("expected a Lark write request");
+  const [
+    args,
+    data,
+  ] = request;
   expect(option(args, "--source")).toBe("-");
   expect(args).not.toContain("--overwrite");
   expect(stdout).toHaveBeenCalledExactlyOnceWith(data);
-  expect(stderr.mock.calls.flat()).toEqual(["lark response\n", "lark error\n"]);
+  expect(stderr.mock.calls.flat()).toEqual([
+    "lark response\n",
+    "lark error\n",
+  ]);
 });
 
 test("writes an exclusive output file using the same CLI without a destination", async () => {
   await writeScene([element("a", "rectangle")]);
   const output = join(directory, "nodes.json");
-  expect(await runCli([input, "-o", output], dependencies)).toBe(0);
+  expect(
+    await runCli(
+      [
+        input,
+        "-o",
+        output,
+      ],
+      dependencies,
+    ),
+  ).toBe(0);
   expect(JSON.parse(await readFile(output, "utf8"))).toMatchObject({
     nodes: [{ type: "composite_shape" }],
   });
-  expect(await runCli([input, "-o", output], dependencies)).toBe(1);
+  expect(
+    await runCli(
+      [
+        input,
+        "-o",
+        output,
+      ],
+      dependencies,
+    ),
+  ).toBe(1);
   expect(stderr).toHaveBeenCalledWith(
     expect.stringContaining("output already exists"),
   );

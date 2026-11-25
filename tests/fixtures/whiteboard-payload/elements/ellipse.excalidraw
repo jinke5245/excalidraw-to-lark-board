@@ -4,15 +4,15 @@
   "source": "https://excalidraw.com",
   "elements": [
     {
-      "id": "poc-embeddable",
-      "type": "embeddable",
+      "id": "shape-ellipse",
+      "type": "ellipse",
       "x": 80,
-      "y": 100,
-      "width": 560,
-      "height": 340,
+      "y": 216,
+      "width": 64,
+      "height": 46,
       "angle": 0,
-      "strokeColor": "transparent",
-      "backgroundColor": "transparent",
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "#e5dbff",
       "fillStyle": "solid",
       "strokeWidth": 2,
       "strokeStyle": "solid",
@@ -21,17 +21,15 @@
       "groupIds": [],
       "frameId": null,
       "index": "a0",
-      "roundness": {
-        "type": 3
-      },
-      "seed": 123456789,
+      "roundness": null,
+      "seed": 123456794,
       "version": 1,
       "versionNonce": 0,
       "isDeleted": false,
       "boundElements": null,
       "updated": 1700000000000,
       "created": 1700000000000,
-      "link": "https://gist.github.com/octocat/6cad326836d38bd3a7ae",
+      "link": null,
       "locked": false
     }
   ],

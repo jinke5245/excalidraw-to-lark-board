@@ -1,0 +1,27 @@
+{
+  "nodes": [
+    {
+      "id": "o1:1",
+      "z_index": 1,
+      "x": 176,
+      "y": 216,
+      "width": 64,
+      "height": 46,
+      "angle": 0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "diamond"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#ffec99",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      }
+    }
+  ]
+}

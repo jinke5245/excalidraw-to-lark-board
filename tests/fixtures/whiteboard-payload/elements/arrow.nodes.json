@@ -1,0 +1,109 @@
+{
+  "nodes": [
+    {
+      "id": "o1:1",
+      "z_index": 1,
+      "x": 80,
+      "y": 80,
+      "width": 168,
+      "height": 80,
+      "angle": 0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "round_rect"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#d0ebff",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      }
+    },
+    {
+      "id": "o1:2",
+      "z_index": 2,
+      "x": 400,
+      "y": 80,
+      "width": 168,
+      "height": 80,
+      "angle": 0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "round_rect"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#d3f9d8",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      }
+    },
+    {
+      "id": "c1:3",
+      "z_index": 3,
+      "x": 248,
+      "y": 120,
+      "width": 152,
+      "height": 0,
+      "angle": 0,
+      "type": "connector",
+      "connector": {
+        "shape": "straight",
+        "start": {
+          "arrow_style": "none",
+          "attached_object": {
+            "id": "o1:1",
+            "snap_to": "right",
+            "position": {
+              "x": 1,
+              "y": 0.5
+            }
+          }
+        },
+        "end": {
+          "arrow_style": "line_arrow",
+          "attached_object": {
+            "id": "o1:2",
+            "snap_to": "left",
+            "position": {
+              "x": 0,
+              "y": 0.5
+            }
+          }
+        },
+        "specified_coordinate": true,
+        "start_object": {
+          "id": "o1:1",
+          "snap_to": "right",
+          "position": {
+            "x": 1,
+            "y": 0.5
+          }
+        },
+        "end_object": {
+          "id": "o1:2",
+          "snap_to": "left",
+          "position": {
+            "x": 0,
+            "y": 0.5
+          }
+        }
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid"
+      }
+    }
+  ]
+}

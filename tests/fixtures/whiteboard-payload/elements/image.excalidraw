@@ -1,0 +1,57 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "poc-native-image",
+      "type": "image",
+      "x": 80,
+      "y": 80,
+      "width": 320,
+      "height": 180,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "index": "a1",
+      "roundness": null,
+      "seed": 123456789,
+      "version": 1,
+      "versionNonce": 0,
+      "isDeleted": false,
+      "boundElements": [],
+      "updated": 1700000000000,
+      "created": 1700000000000,
+      "link": null,
+      "locked": false,
+      "fileId": "21d13b82ac44565b985d36f84bf10d6605640d4c",
+      "scale": [
+        1,
+        1
+      ],
+      "crop": null,
+      "status": "saved"
+    }
+  ],
+  "appState": {
+    "gridSize": 20,
+    "gridStep": 5,
+    "gridModeEnabled": false,
+    "viewBackgroundColor": "#ffffff"
+  },
+  "files": {
+    "21d13b82ac44565b985d36f84bf10d6605640d4c": {
+      "id": "21d13b82ac44565b985d36f84bf10d6605640d4c",
+      "mimeType": "image/png",
+      "created": 1700000000000,
+      "dataURL": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAUAAAAC0CAYAAADl5PURAAAEDklEQVR4nO3UQVEEARAEwZVwLxwgCQVIQAFusIAmBFzca1Gw37omyI5IBzN1vL7/nFA6Lnb7/jyhdDz7Gfh/BJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFlxdYtmZmZmZmZmZmZmZmZmZvYn9/h4OaF0dYtfb/cTSgJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVAkhOAFkhgOQEkBUCSE4AWSGA5ASQFQJITgBZIYDkBJAVv9tweYc5wM86AAAAAElFTkSuQmCC"
+    }
+  }
+}

@@ -9,8 +9,8 @@ function requestToken(name: string): string {
     .update(URL_NAMESPACE)
     .update(name, "utf8")
     .digest();
-  digest[6] = (digest[6] & 0x0f) | 0x50;
-  digest[8] = (digest[8] & 0x3f) | 0x80;
+  digest[6] = (digest.readUInt8(6) & 0x0f) | 0x50;
+  digest[8] = (digest.readUInt8(8) & 0x3f) | 0x80;
   const hex = digest.subarray(0, 16).toString("hex");
   return [
     hex.slice(0, 8),
@@ -66,7 +66,11 @@ export async function createWhiteboard(
 
 /** Returns the signed-in user's Open ID required for native sticky notes. */
 export async function stickyNoteAuthor(run: RunLark): Promise<string> {
-  const status = await run(["auth", "status", "--json"]);
+  const status = await run([
+    "auth",
+    "status",
+    "--json",
+  ]);
   if (status.status === 0) {
     const value: unknown = JSON.parse(status.stdout);
     if (

@@ -27,7 +27,10 @@ export type ElementType = keyof typeof PREFIXES;
 /** Source element selected for native node conversion. */
 export type SupportedElement = SourceElement & { type: ElementType };
 /** A pair of canvas coordinates. */
-export type Point = [number, number];
+export type Point = [
+  number,
+  number,
+];
 type Coordinate = { x: number; y: number };
 /** A canvas bounding box and clockwise rotation in degrees. */
 export type Geometry = Coordinate & {
@@ -37,7 +40,7 @@ export type Geometry = Coordinate & {
 };
 /** Common geometry, ID, and layer for a converted node. */
 export type BaseNode = Geometry & { id: string; z_index: number };
-/** Feishu text formatting and optional rich-link content. */
+/** Feishu text content and formatting. */
 export type BoardText = {
   text: string;
   font_size: number;
@@ -45,19 +48,6 @@ export type BoardText = {
   vertical_align: "top" | "mid" | "bottom";
   text_color?: string;
   text_color_type?: number;
-  rich_text?: {
-    paragraphs: {
-      paragraph_type: number;
-      elements: {
-        element_type: number;
-        link_element: {
-          herf: string;
-          text: string;
-          text_style: Record<string, string | number | boolean>;
-        };
-      }[];
-    }[];
-  };
 };
 /** Side of a shape to which a connector is attached. */
 export type SnapSide = "left" | "right" | "top" | "bottom";

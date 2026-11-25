@@ -8,8 +8,6 @@ import {
 
 const defaultDependencies: ImportDependencies = {
   runLark,
-  renderSnapshots: async (scene, ids) =>
-    (await import("../snapshot/index.js")).renderSnapshots(scene, ids),
   stdout: (text) => {
     process.stdout.write(text);
   },
@@ -40,12 +38,6 @@ export async function runCli(
       "--whiteboard-token <token>",
       "append nodes to a known whiteboard using the signed-in Lark CLI",
     )
-    .option(
-      "--snapshot <ELEMENT_ID=FILE.png>",
-      "use a supplied screenshot for an iframe, magicframe, or embeddable (repeatable)",
-      (value: string, previous: string[]) => [...previous, value],
-      [],
-    )
     .configureOutput({
       writeOut: dependencies.stdout,
       writeErr: dependencies.stderr,
@@ -67,16 +59,6 @@ export async function runCli(
           !/^[A-Za-z0-9_-]+$/.test(options.whiteboardToken)
         ) {
           program.error("invalid whiteboard token", { exitCode: 2 });
-        }
-        if (
-          options.snapshot.length > 0 &&
-          target === undefined &&
-          options.whiteboardToken === undefined
-        ) {
-          program.error(
-            "--snapshot requires a Feishu target URL or --whiteboard-token",
-            { exitCode: 2 },
-          );
         }
         status = await runImport(input, target, options, dependencies);
       },

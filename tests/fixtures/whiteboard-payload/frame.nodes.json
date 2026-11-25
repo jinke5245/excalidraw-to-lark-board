@@ -1,0 +1,204 @@
+{
+  "nodes": [
+    {
+      "id": "t1:5",
+      "type": "section",
+      "z_index": 5,
+      "x": 56,
+      "y": 56,
+      "width": 224,
+      "height": 230,
+      "angle": 0.0,
+      "section": {
+        "title": "处理分区"
+      }
+    },
+    {
+      "id": "o1:1",
+      "z_index": 1,
+      "x": 24,
+      "y": 24,
+      "width": 168,
+      "height": 80,
+      "angle": 0.0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "round_rect"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#d0ebff",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      },
+      "text": {
+        "text": "开始",
+        "font_size": 24,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      },
+      "parent_id": "t1:5"
+    },
+    {
+      "id": "o1:4",
+      "z_index": 4,
+      "x": 24,
+      "y": 160,
+      "width": 64,
+      "height": 46,
+      "angle": 0.0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "ellipse"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#e5dbff",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      },
+      "parent_id": "t1:5"
+    },
+    {
+      "id": "o1:6",
+      "z_index": 6,
+      "x": 400,
+      "y": 80,
+      "width": 168,
+      "height": 80,
+      "angle": 0.0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "round_rect"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#d3f9d8",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      },
+      "text": {
+        "text": "完成",
+        "font_size": 24,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "o1:8",
+      "z_index": 8,
+      "x": 316,
+      "y": 216,
+      "width": 64,
+      "height": 46,
+      "angle": 0.0,
+      "type": "composite_shape",
+      "composite_shape": {
+        "type": "diamond"
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid",
+        "fill_color": "#ffec99",
+        "fill_color_type": 1,
+        "fill_opacity": 100
+      }
+    },
+    {
+      "id": "a1:9",
+      "z_index": 9,
+      "x": 400,
+      "y": 226.5,
+      "width": 80,
+      "height": 25,
+      "angle": 0.0,
+      "type": "text_shape",
+      "text": {
+        "text": "图形样例",
+        "font_size": 20,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    },
+    {
+      "id": "c1:3",
+      "z_index": 12,
+      "x": 248.0,
+      "y": 120.0,
+      "width": 152.0,
+      "height": 0.0,
+      "angle": 0,
+      "type": "connector",
+      "connector": {
+        "shape": "straight",
+        "start": {
+          "arrow_style": "none",
+          "attached_object": {
+            "id": "o1:1",
+            "snap_to": "right",
+            "position": {
+              "x": 1,
+              "y": 0.5
+            }
+          }
+        },
+        "end": {
+          "arrow_style": "line_arrow",
+          "attached_object": {
+            "id": "o1:6",
+            "snap_to": "left",
+            "position": {
+              "x": 0,
+              "y": 0.5
+            }
+          }
+        },
+        "specified_coordinate": true,
+        "start_object": {
+          "id": "o1:1",
+          "snap_to": "right",
+          "position": {
+            "x": 1,
+            "y": 0.5
+          }
+        },
+        "end_object": {
+          "id": "o1:6",
+          "snap_to": "left",
+          "position": {
+            "x": 0,
+            "y": 0.5
+          }
+        }
+      },
+      "style": {
+        "border_color": "#1e1e1e",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "narrow",
+        "border_style": "solid"
+      }
+    }
+  ]
+}

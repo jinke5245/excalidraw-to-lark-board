@@ -30,25 +30,25 @@ describe("resolveTarget", () => {
     expect(run).not.toHaveBeenCalled();
   });
 
-  it.each(["board", "whiteboard"])(
-    "verifies the token in a %s route",
-    async (resource) => {
-      const run = vi.fn().mockResolvedValue(envelope({ theme: "default" }));
+  it.each([
+    "board",
+    "whiteboard",
+  ])("verifies the token in a %s route", async (resource) => {
+    const run = vi.fn().mockResolvedValue(envelope({ theme: "default" }));
 
-      await expect(
-        resolveTarget(`https://li.feishu.cn/${resource}/Board1/`, run),
-      ).resolves.toEqual({
-        boardToken: "Board1",
-      });
-      expect(run).toHaveBeenCalledExactlyOnceWith([
-        "api",
-        "GET",
-        "/open-apis/board/v1/whiteboards/Board1/theme",
-        "--as",
-        "user",
-      ]);
-    },
-  );
+    await expect(
+      resolveTarget(`https://li.feishu.cn/${resource}/Board1/`, run),
+    ).resolves.toEqual({
+      boardToken: "Board1",
+    });
+    expect(run).toHaveBeenCalledExactlyOnceWith([
+      "api",
+      "GET",
+      "/open-apis/board/v1/whiteboards/Board1/theme",
+      "--as",
+      "user",
+    ]);
+  });
 
   it("requires successful verification of direct board links", async () => {
     const url = "https://li.feishu.cn/board/Board1";
@@ -182,6 +182,23 @@ describe("resolveTarget", () => {
       const run = vi.fn().mockResolvedValue(envelope({ block }));
       await expect(resolveTarget(url, run)).rejects.toThrow();
     }
+  });
+
+  it("rejects ASCII controls and Unicode whitespace before calling the CLI", async () => {
+    const run = vi.fn();
+    for (const character of [
+      "\u0000",
+      "\u001f",
+      "\u007f",
+      "\u0085",
+      "\u202f",
+    ]) {
+      const url = "https://li.feishu.cn/wiki/Wiki1?value=" + character;
+      await expect(resolveTarget(url, run)).rejects.toThrow(
+        "invalid whitespace or control character",
+      );
+    }
+    expect(run).not.toHaveBeenCalled();
   });
 
   it("rejects invalid links before calling the CLI", async () => {

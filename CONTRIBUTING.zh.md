@@ -30,7 +30,7 @@
 pnpm install --frozen-lockfile
 ```
 
-手动验证真实导入或截图时，按 [README](README.md#安装) 配置环境。
+手动验证真实导入时，按 [README](README.md#安装) 配置环境。
 
 ## 测试和检查
 

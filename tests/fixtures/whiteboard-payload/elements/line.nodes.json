@@ -1,0 +1,49 @@
+{
+  "nodes": [
+    {
+      "id": "c1:1",
+      "z_index": 1,
+      "x": 80.0,
+      "y": 110.0,
+      "width": 272.0,
+      "height": 54.0,
+      "angle": 0,
+      "type": "connector",
+      "connector": {
+        "shape": "polyline",
+        "start": {
+          "arrow_style": "none",
+          "position": {
+            "x": 80.0,
+            "y": 110.0
+          }
+        },
+        "end": {
+          "arrow_style": "none",
+          "position": {
+            "x": 352.0,
+            "y": 164.0
+          }
+        },
+        "specified_coordinate": true,
+        "turning_points": [
+          {
+            "x": 85.0,
+            "y": 38.0
+          },
+          {
+            "x": 165.0,
+            "y": 8.0
+          }
+        ]
+      },
+      "style": {
+        "border_color": "#5f3dc4",
+        "border_color_type": 1,
+        "border_opacity": 100,
+        "border_width": "medium",
+        "border_style": "solid"
+      }
+    }
+  ]
+}

@@ -47,8 +47,12 @@ export async function requestLark(run: RunLark, args: string[]) {
   const result = await run(args);
   if (result.status !== 0) {
     throw new Error(
-      [result.stdout.trim(), result.stderr.trim()].filter(Boolean).join("\n") ||
-        `lark-cli failed with exit code ${result.status}`,
+      [
+        result.stdout.trim(),
+        result.stderr.trim(),
+      ]
+        .filter(Boolean)
+        .join("\n") || `lark-cli failed with exit code ${result.status}`,
     );
   }
   const response: unknown = JSON.parse(result.stdout);

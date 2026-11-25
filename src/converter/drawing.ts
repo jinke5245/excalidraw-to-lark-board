@@ -20,22 +20,52 @@ import type {
 } from "./model.js";
 
 const ARROW_HEADS = new Map<unknown, string>([
-  [null, "none"],
-  ["arrow", "line_arrow"],
-  ["triangle", "triangle_arrow"],
-  ["triangle_outline", "empty_triangle_arrow"],
-  ["circle", "circle_arrow"],
-  ["dot", "circle_arrow"],
-  ["circle_outline", "empty_circle_arrow"],
-  ["diamond", "diamond_arrow"],
-  ["diamond_outline", "empty_diamond_arrow"],
+  [
+    null,
+    "none",
+  ],
+  [
+    "arrow",
+    "line_arrow",
+  ],
+  [
+    "triangle",
+    "triangle_arrow",
+  ],
+  [
+    "triangle_outline",
+    "empty_triangle_arrow",
+  ],
+  [
+    "circle",
+    "circle_arrow",
+  ],
+  [
+    "dot",
+    "circle_arrow",
+  ],
+  [
+    "circle_outline",
+    "empty_circle_arrow",
+  ],
+  [
+    "diamond",
+    "diamond_arrow",
+  ],
+  [
+    "diamond_outline",
+    "empty_diamond_arrow",
+  ],
 ]);
 
 function pair(value: unknown, field: string): Point {
   if (!Array.isArray(value) || value.length !== 2) {
     throw new TypeError(`${field}: expected an [x, y] pair`);
   }
-  return [number(value[0], field), number(value[1], field)];
+  return [
+    number(value[0], field),
+    number(value[1], field),
+  ];
 }
 
 /** Round a numeric style value, rounding ties to the closest even integer. */
@@ -123,12 +153,25 @@ export function nodeStyle(
   return style;
 }
 
-function rotate([px, py]: Point, [cx, cy]: Point, angle: number): Point {
+function rotate(
+  [
+    px,
+    py,
+  ]: Point,
+  [
+    cx,
+    cy,
+  ]: Point,
+  angle: number,
+): Point {
   const x = px - cx;
   const y = py - cy;
   const cos = Math.cos(angle);
   const sin = Math.sin(angle);
-  return [cx + x * cos - y * sin, cy + x * sin + y * cos];
+  return [
+    cx + x * cos - y * sin,
+    cy + x * sin + y * cos,
+  ];
 }
 
 /** Find the extrema of a nonempty array of path coordinates. */
@@ -137,7 +180,10 @@ export function bounds(points: Point[]) {
   let y = Infinity;
   let right = -Infinity;
   let bottom = -Infinity;
-  for (const [px, py] of points) {
+  for (const [
+    px,
+    py,
+  ] of points) {
     x = Math.min(x, px);
     y = Math.min(y, py);
     right = Math.max(right, px);
@@ -159,10 +205,19 @@ export function canvasPath(
   }
   const points = element.points.map((point) => pair(point, "points"));
   const { x, y, right, bottom } = bounds(points);
-  const center: Point = [(x + right) / 2, (y + bottom) / 2];
+  const center: Point = [
+    (x + right) / 2,
+    (y + bottom) / 2,
+  ];
   return points.map((point) => {
-    const [px, py] = rotate(point, center, node.angle * (Math.PI / 180));
-    return [node.x + px, node.y + py];
+    const [
+      px,
+      py,
+    ] = rotate(point, center, node.angle * (Math.PI / 180));
+    return [
+      node.x + px,
+      node.y + py,
+    ];
   });
 }
 
@@ -172,7 +227,10 @@ function endpoint(
   point: Point,
   shapes: Map<string, BaseNode>,
   warnings: string[],
-): [Port, Point] {
+): [
+  Port,
+  Point,
+] {
   const arrowhead = element[`${side}Arrowhead`];
   const head =
     arrowhead === undefined
@@ -196,12 +254,21 @@ function endpoint(
     const shape = typeof target === "string" ? shapes.get(target) : undefined;
     if (shape) {
       const { x, y, width, height, angle } = shape;
-      const center: Point = [x + width / 2, y + height / 2];
+      const center: Point = [
+        x + width / 2,
+        y + height / 2,
+      ];
       const radians = angle * (Math.PI / 180);
       const local = rotate(point, center, -radians);
-      const [u, v] =
+      const [
+        u,
+        v,
+      ] =
         binding.fixedPoint == null
-          ? [(local[0] - x) / width, (local[1] - y) / height]
+          ? [
+              (local[0] - x) / width,
+              (local[1] - y) / height,
+            ]
           : pair(binding.fixedPoint, "fixedPoint");
       const position = { x: clamp(u, 0, 1), y: clamp(v, 0, 1) };
       // shortcut: use the nearest side as the snap direction, revisit for interior bindings.
@@ -212,22 +279,35 @@ function endpoint(
         bottom: 1 - position.y,
       };
       let snap: SnapSide = "left";
-      for (const candidate of ["right", "top", "bottom"] as const) {
+      for (const candidate of [
+        "right",
+        "top",
+        "bottom",
+      ] as const) {
         if (distances[candidate] < distances[snap]) snap = candidate;
       }
       const attachment = { id: shape.id, snap_to: snap, position };
       const anchor = rotate(
-        [x + position.x * width, y + position.y * height],
+        [
+          x + position.x * width,
+          y + position.y * height,
+        ],
         center,
         radians,
       );
-      return [{ arrow_style, attached_object: attachment }, anchor];
+      return [
+        { arrow_style, attached_object: attachment },
+        anchor,
+      ];
     }
     warnings.push(
       `${element.id}: ${side} binding target ${describe(target)} unavailable; kept a free endpoint`,
     );
   }
-  return [{ arrow_style, position: { x: point[0], y: point[1] } }, point];
+  return [
+    { arrow_style, position: { x: point[0], y: point[1] } },
+    point,
+  ];
 }
 
 /** Create a line or arrow node with coordinates and optional bindings. */
@@ -239,10 +319,17 @@ export function connectorNode(
   warnings: string[],
 ): BoardNode {
   const path = canvasPath(element, node, 2);
+  const [first] = path;
+  let last = path.at(-1);
+  if (!first || !last) {
+    throw new Error(
+      `${element.id}: points must contain at least 2 [x, y] pairs`,
+    );
+  }
   if (element.type === "line" && element.polygon) {
-    const last = path[path.length - 1];
-    if (path[0][0] !== last[0] || path[0][1] !== last[1]) {
-      path.push(path[0]);
+    if (first[0] !== last[0] || first[1] !== last[1]) {
+      path.push(first);
+      last = first;
     }
     if (
       element.backgroundColor !== undefined &&
@@ -251,20 +338,14 @@ export function connectorNode(
       warnings.push(`${element.id}: closed polygon fill is not preserved`);
     }
   }
-  const [start, startAnchor] = endpoint(
-    element,
-    "start",
-    path[0],
-    shapes,
-    warnings,
-  );
-  const [end, endAnchor] = endpoint(
-    element,
-    "end",
-    path[path.length - 1],
-    shapes,
-    warnings,
-  );
+  const [
+    start,
+    startAnchor,
+  ] = endpoint(element, "start", first, shapes, warnings);
+  const [
+    end,
+    endAnchor,
+  ] = endpoint(element, "end", last, shapes, warnings);
   path[0] = startAnchor;
   path[path.length - 1] = endAnchor;
   const { x, y, right, bottom } = bounds(path);
@@ -277,9 +358,12 @@ export function connectorNode(
   if (start.attached_object) connector.start_object = start.attached_object;
   if (end.attached_object) connector.end_object = end.attached_object;
   if (path.length > 2) {
-    connector.turning_points = path
-      .slice(1, -1)
-      .map(([px, py]) => ({ x: px - x, y: py - y }));
+    connector.turning_points = path.slice(1, -1).map(
+      ([
+        px,
+        py,
+      ]) => ({ x: px - x, y: py - y }),
+    );
   }
   if (label) {
     connector.captions = { data: [label] };

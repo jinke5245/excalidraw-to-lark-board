@@ -3,7 +3,6 @@ import { access, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import { join, relative } from "node:path";
 import {
   convert,
-  PNG_SIGNATURE,
   type BoardNode,
   type RasterAsset,
 } from "../converter/index.js";
@@ -20,16 +19,11 @@ import { resolveTarget } from "../target/index.js";
 export interface ImportOptions {
   output?: string;
   whiteboardToken?: string;
-  snapshot: string[];
 }
 
 /** External services and output streams used by the import command. */
 export interface ImportDependencies {
   runLark: RunLark;
-  renderSnapshots: (
-    scene: unknown,
-    elementIds: string[],
-  ) => Promise<Map<string, RasterAsset>>;
   stdout: (text: string) => void;
   stderr: (text: string) => void;
 }
@@ -44,33 +38,16 @@ async function checkOutput(filename: string) {
   throw new Error(`output already exists: ${filename}`);
 }
 
-async function snapshotOverrides(values: string[]) {
-  const snapshots = new Map<string, RasterAsset>();
-  for (const value of values) {
-    const equals = value.indexOf("=");
-    const elementId = value.slice(0, equals);
-    const filename = value.slice(equals + 1);
-    if (equals <= 0 || !filename || snapshots.has(elementId)) {
-      throw new Error(
-        "expected --snapshot ELEMENT_ID=FILE.png with a unique element ID",
-      );
-    }
-    const data = await readFile(filename);
-    if (!data.subarray(0, PNG_SIGNATURE.length).equals(PNG_SIGNATURE)) {
-      throw new Error(`${filename}: snapshots must be PNG files`);
-    }
-    snapshots.set(elementId, { suffix: ".png", data });
-  }
-  return snapshots;
-}
-
 function canonicalJson(value: unknown): string {
   return JSON.stringify(value, (_key, item: unknown) => {
     if (!isRecord(item)) return item;
     return Object.fromEntries(
       Object.keys(item)
         .sort()
-        .map((key) => [key, item[key]]),
+        .map((key) => [
+          key,
+          item[key],
+        ]),
     );
   });
 }
@@ -119,31 +96,22 @@ export async function runImport(
   options: ImportOptions,
   dependencies: ImportDependencies,
 ): Promise<number> {
-  const { runLark, renderSnapshots, stdout, stderr } = dependencies;
+  const { runLark, stdout, stderr } = dependencies;
   if (options.output) await checkOutput(options.output);
   const target =
     targetUrl === undefined
       ? undefined
       : await resolveTarget(targetUrl, (args) => requestLark(runLark, args));
-  const snapshots = await snapshotOverrides(options.snapshot);
   const scene: unknown = JSON.parse(
     (await readFile(filename, "utf8")).replace(/^\uFEFF/, ""),
   );
   const importing =
     targetUrl !== undefined || options.whiteboardToken !== undefined;
   const assets = new Map<string, RasterAsset>();
-  let usedAutomaticSnapshots = false;
-  const { payload, warnings } = await convert(scene, {
-    assets: importing ? assets : undefined,
-    snapshots,
-    autoRender: importing
-      ? async (elementIds) => {
-          const generated = await renderSnapshots(scene, elementIds);
-          usedAutomaticSnapshots = generated.size > 0;
-          return generated;
-        }
-      : undefined,
-  });
+  const { payload, warnings } = await convert(
+    scene,
+    importing ? { assets } : {},
+  );
 
   const notes = payload.nodes.flatMap((node) =>
     node.sticky_note ? [node.sticky_note] : [],
@@ -156,12 +124,13 @@ export async function runImport(
   let data = JSON.stringify(payload, null, 2) + "\n";
   let requestContent = data;
   if (assets.size > 0) {
-    // Automatic captures can change even when retrying the same source scene.
-    if (usedAutomaticSnapshots) requestContent += canonicalJson(scene);
     const hashedAssets = Object.fromEntries(
       Array.from(
-        usedAutomaticSnapshots ? snapshots : assets,
-        ([id, { data }]) => [
+        assets,
+        ([
+          id,
+          { data },
+        ]) => [
           id,
           createHash("sha256").update(data).digest("hex"),
         ],

@@ -30,7 +30,7 @@ This document covers the project layout, local setup, testing, and development w
 pnpm install --frozen-lockfile
 ```
 
-For manual checks involving live imports or screenshots, follow the setup in the [README](README.md#安装).
+For manual checks involving live imports, follow the setup in the [README](README.md#安装).
 
 ## Tests and checks
 

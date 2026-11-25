@@ -1,0 +1,32 @@
+{
+  "nodes": [
+    {
+      "id": "w1:1",
+      "z_index": 1,
+      "x": 80,
+      "y": 560,
+      "width": 250,
+      "height": 250,
+      "angle": 0.0,
+      "type": "sticky_note",
+      "sticky_note": {
+        "show_author_info": false,
+        "user_id": "ou_FixtureAuthor"
+      },
+      "style": {
+        "fill_color": "#fef1ce",
+        "fill_opacity": 100,
+        "fill_color_type": 0,
+        "theme_fill_color_code": 0
+      },
+      "text": {
+        "text": "继续跟进",
+        "font_size": 28,
+        "horizontal_align": "center",
+        "vertical_align": "mid",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    }
+  ]
+}

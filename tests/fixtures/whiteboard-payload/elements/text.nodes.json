@@ -1,0 +1,22 @@
+{
+  "nodes": [
+    {
+      "id": "a1:1",
+      "z_index": 1,
+      "x": 264,
+      "y": 226.5,
+      "width": 80,
+      "height": 25,
+      "angle": 0,
+      "type": "text_shape",
+      "text": {
+        "text": "图形样例",
+        "font_size": 20,
+        "horizontal_align": "left",
+        "vertical_align": "top",
+        "text_color": "#1e1e1e",
+        "text_color_type": 1
+      }
+    }
+  ]
+}
